@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Honk&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+.lato-regular {
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+.container {
+  margin: 50px auto;
+  width: 70%;
+  max-width: 600px;
+  border: 1px solid blueviolet;
+  border-radius: 10px;
+  box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.container h1 {
+  text-align: center;
+  margin: 20px 0;
+  font-size: 28px;
+  color: blueviolet;
+  cursor: pointer;
+  transition: border-bottom 0.5s;
+}
+
+.container h1:hover {
+  border-bottom: 3px solid blueviolet;
+}
+
+.todo_body {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  font-size: 20px;
+  padding: 20px 0;
+}
+
+.todo_body input {
+  width: 100%;
+  padding: 10px;
+  font-size: 18px;
+  border: 1px solid blueviolet;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.add_button {
+  display: block;
+  margin: 0 auto;
+  font-size: 20px;
+  font-weight: 600;
+  color: white;
+  padding: 10px 20px;
+  width: 50%;
+  cursor: pointer;
+  background-color: blueviolet;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.add_button:hover {
+  background-color: #8b5de7;
+}
+
+.todo_list {
+  text-align: center;
+  margin-top: 20px;
+  padding: 20px;
+}
+.todo_item {
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid blueviolet;
+  border-radius: 5px;
+  font-size: 22px;
+}
+
+.todo_item:hover {
+  cursor: pointer;
+  margin: 15px;
+  transition: 500ms;
+}
+
+.red {
+  background-color: #ff491c;
+}
+.green {
+  background-color: #5bf393;
+}
