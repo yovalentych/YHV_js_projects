@@ -1,32 +1,38 @@
 const dnaSeq =
-  'AAAAAAAAAAAAAACAAAAAAAATTGCCAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAG';
-const findPrimer = (seq) => {
+  'GTGGACACGTACGCGGGTGCTTACGACCGTCAGTCGCGCGAGCGCGAGAATTCGAGCGCAGCAAGCCCAGCGACACAGCGTAGCGCCAACGAAGACAAGGCGGCCGACCTTCAGCGCGAAGTCGAGCGCGACGGGGGCCGGTTCAGGTTCGTCGGGCATTTCAGCGAAGCGCCGGGCACGTCGGCGTTCGGGACGGCGGAGCGCCCGGAGTTCGAACGCATCCTGAACGAATGCCGCGCCGGGCGGCTCAACATGATCATTGTCTATGACGTGTCGCGCTTCTCGCGCCTGAAGGTCATGGACGCGATTCCGATTGTCTCGGAATTGCTCGCCCTGGGCGTGACGATTGTTTCCACTCAGGAAGGCGTCTTCCGGCAGGGAAACGTCATGGACCTGATTCACCTGATTATGCGGCTCGACGCGTCGCACAAAGAATCTTCGCTGAAGTCGGCGAAGATTCTCGACACGAAGAACCTTCAGCGCGAATTGGGCGGGTACGTCGGCGGGAAGGCGCCTTACGGCTTCGAGCTTGTTTCGGAGACGAAGGAGATCACGCGCAACGGCCGAATGGTCAATGTCGTCATCAACAAGCTTGCGCACTCGACCACTCCCCTTACCGGACCCTTCGAGTTCGAGCCCGACGTAATCCGGTGGTGGTGGCGTGAGATCAAGACGCACAAACACCTTCCCTTCAAGCCGGGCAGTCAAGCCGCCATTCACCCGGGCAGCATCACGGGGCTTTGTAAGCGCATGGACGCTGACGCCGTGCCGACCCGGGGCGAGACGATTGGGAAGAAGACCGCTTCAAGCGCCTGGGACCCGGCAACCGTTATGCGAATCCTTCGGGACCCGCGTATTGCGGGCTTCGCCGCTGAGGTGATCTACAAGAAGAAGCCGGACGGCACGCCGACCACGAAGATTGAGGGTTACCGCATTCAGCGCGACCCGATCACGCTCCGGCCGGTCGAGCTTGATTGCGGACCGATCATCGAGCCCGCTGAGTGGTATGAGCTTCAGGCGTGGTTGGACGGCAGGGGGCGCGGCAAGGGGCTTTCCCGGGGGCAAGCCATTCTGTCCGCCATGGACAAGCTGTACTGCGAGTGTGGCGCCGTCATGACTTCGAAGCGCGGGGAAGAATCGATCAAGGACTCTTACCGCTGCCGTCGCCGGAAGGTGGTCGACCCGTCCGCACCTGGGCAGCACGAAGGCACGTGCAACGTCAGCATGGCGGCACTCGACAAGTTCGTTGCGGAACGCATCTTCAACAAGATCAGGCACGCCGAAGGCGACGAAGAGACGTTGGCGCTTCTGTGGGAAGCCGCCCGACGCTTCGGCAAGCTCACTGAGGCGCCTGAGAAGAGCGGCGAACGGGCGAACCTTGTTGCGGAGCGCGCCGACGCCCTGAACGCCCTTGAAGAGCTGTACGAAGACCGCGCGGCAGGCGCGTACGACGGACCCGTTGGCAGGAAGCACTTCCGGAAGCAACAGGCAGCGCTGACGCTCCGGCAGCAAGGGGCGGAAGAGCGGCTTGCCGAACTTGAAGCCGCCGAAGCCCCGAAGCTTCCCCTTGACCAATGGTTCCCCGAAGACGCCGACGCTGACCCGACCGGCCCTAAGTCGTGGTGGGGGCGCGCGTCAGTAGACGACAAGCGCGTGTTCGTCGGGCTCTTCGTAGACAAGATCGTTGTCACGAAGTCGACTACGGGCAGGGGGCAGGGAACGCCCATCGAGAAGCGCGCTTCGATCACGTGGGCGAAGCCGCCGACCGACGACGACGAAGACGACGCCCAGGACGGCACGGAAGACGTAGCGGCGTAG';
+
+const findPrimerSite = (seq) => {
   let startBP = 0;
   let thresholdBP = 18 + startBP;
-  let prePrimer = seq.slice(startBP, thresholdBP);
-
-  while (thresholdBP < seq.length && prePrimer.length <= 21) {
+  let prePrimerSite = seq.trim().slice(startBP, thresholdBP);
+  while (thresholdBP < seq.length && prePrimerSite.length <= 21) {
     if (
-      prePrimer[prePrimer.length - 1] === 'C' ||
-      prePrimer[prePrimer.length - 1] === 'G'
+      prePrimerSite[prePrimerSite.length - 1] === 'C' ||
+      prePrimerSite[prePrimerSite.length - 1] === 'G'
     ) {
-      const [Tm, GCcontent] = calcTmGC(prePrimer);
-      console.log(
-        `3'-${prePrimer}-5' : ${prePrimer.length}bp ${startBP} :: ${thresholdBP}`
-      );
-      console.log(`Tm: ${Tm}±1°C, GC content: ${GCcontent}±1%`);
-      break; // Вийти з циклу, коли умова виконана
+      return [prePrimerSite, startBP, thresholdBP];
     } else {
       thresholdBP++;
-      prePrimer = seq.slice(startBP, thresholdBP);
+      prePrimerSite = seq.slice(startBP, thresholdBP);
       startBP++;
     }
   }
 };
 
-findPrimer(dnaSeq);
+const complement = (seq) => {
+  const complementMap = {
+    A: 'T',
+    T: 'A',
+    C: 'G',
+    G: 'C',
+  };
+  const complementSeq = Array.from(seq)
+    .map((nucleotide) => complementMap[nucleotide])
+    .join('');
+  return complementSeq;
+};
 
-function calcTmGC(seq) {
+const calcTmGC = (seq) => {
   let AT = 0;
   let GC = 0;
   let Tm = 0;
@@ -41,4 +47,31 @@ function calcTmGC(seq) {
   Tm = AT * 2 + GC * 4;
   GCcontent = Math.floor((GC / seq.length) * 100);
   return [Tm, GCcontent];
-}
+};
+
+const showPrimers = (primerSeq, startPoint, finishPoint, Tm, GCcontent) => {
+  const placeholder = document.getElementById('primer-maker_results');
+  const primerDIV = document.createElement('div');
+  // ********************************************************
+  const primerInfo = `3'-${primerSeq}-5' : ${primerSeq.length}bp || ${startPoint} :: ${finishPoint}`;
+  const primerFeatures = `Tm: ${Tm}±1°C, GC content: ${GCcontent}±1%`;
+  // ********************************************************
+
+  primerDIV.innerHTML = `<h2>${primerInfo}</h2> \n <h3>${primerFeatures}</h3>`;
+
+  placeholder.appendChild(primerDIV);
+};
+const getForwardPrimer = (seq) => {
+  const fwdPrimerSite = findPrimerSite(seq);
+  const fwdPrimerSeq = complement(fwdPrimerSite[0]);
+  const [Tmelt, CGpercentage] = calcTmGC(fwdPrimerSeq);
+  showPrimers(
+    fwdPrimerSeq,
+    fwdPrimerSite[1],
+    fwdPrimerSite[2],
+    Tmelt,
+    CGpercentage
+  );
+};
+
+getForwardPrimer(dnaSeq);

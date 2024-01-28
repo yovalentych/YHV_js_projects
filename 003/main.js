@@ -2,34 +2,25 @@ const goBtn = document.getElementById('goBtn');
 
 // const dnaSeq =
 //   'GTGGACACGTACGCGGGTGCTTACGACCGTCAGTCGCGCGAGCGCGAGAATTCGAGCGCAGCAAGCCCAGCGACACAGCGTAGCGCCAACGAAGACAAGGCGGCCGACCTTCAGCGCGAAGTCGAGCGCGACGGGGGCCGGTTCAGGTTCGTCGGGCATTTCAGCGAAGCGCCGGGCACGTCGGCGTTCGGGACGGCGGAGCGCCCGGAGTTCGAACGCATCCTGAACGAATGCCGCGCCGGGCGGCTCAACATGATCATTGTCTATGACGTGTCGCGCTTCTCGCGCCTGAAGGTCATGGACGCGATTCCGATTGTCTCGGAATTGCTCGCCCTGGGCGTGACGATTGTTTCCACTCAGGAAGGCGTCTTCCGGCAGGGAAACGTCATGGACCTGATTCACCTGATTATGCGGCTCGACGCGTCGCACAAAGAATCTTCGCTGAAGTCGGCGAAGATTCTCGACACGAAGAACCTTCAGCGCGAATTGGGCGGGTACGTCGGCGGGAAGGCGCCTTACGGCTTCGAGCTTGTTTCGGAGACGAAGGAGATCACGCGCAACGGCCGAATGGTCAATGTCGTCATCAACAAGCTTGCGCACTCGACCACTCCCCTTACCGGACCCTTCGAGTTCGAGCCCGACGTAATCCGGTGGTGGTGGCGTGAGATCAAGACGCACAAACACCTTCCCTTCAAGCCGGGCAGTCAAGCCGCCATTCACCCGGGCAGCATCACGGGGCTTTGTAAGCGCATGGACGCTGACGCCGTGCCGACCCGGGGCGAGACGATTGGGAAGAAGACCGCTTCAAGCGCCTGGGACCCGGCAACCGTTATGCGAATCCTTCGGGACCCGCGTATTGCGGGCTTCGCCGCTGAGGTGATCTACAAGAAGAAGCCGGACGGCACGCCGACCACGAAGATTGAGGGTTACCGCATTCAGCGCGACCCGATCACGCTCCGGCCGGTCGAGCTTGATTGCGGACCGATCATCGAGCCCGCTGAGTGGTATGAGCTTCAGGCGTGGTTGGACGGCAGGGGGCGCGGCAAGGGGCTTTCCCGGGGGCAAGCCATTCTGTCCGCCATGGACAAGCTGTACTGCGAGTGTGGCGCCGTCATGACTTCGAAGCGCGGGGAAGAATCGATCAAGGACTCTTACCGCTGCCGTCGCCGGAAGGTGGTCGACCCGTCCGCACCTGGGCAGCACGAAGGCACGTGCAACGTCAGCATGGCGGCACTCGACAAGTTCGTTGCGGAACGCATCTTCAACAAGATCAGGCACGCCGAAGGCGACGAAGAGACGTTGGCGCTTCTGTGGGAAGCCGCCCGACGCTTCGGCAAGCTCACTGAGGCGCCTGAGAAGAGCGGCGAACGGGCGAACCTTGTTGCGGAGCGCGCCGACGCCCTGAACGCCCTTGAAGAGCTGTACGAAGACCGCGCGGCAGGCGCGTACGACGGACCCGTTGGCAGGAAGCACTTCCGGAAGCAACAGGCAGCGCTGACGCTCCGGCAGCAAGGGGCGGAAGAGCGGCTTGCCGAACTTGAAGCCGCCGAAGCCCCGAAGCTTCCCCTTGACCAATGGTTCCCCGAAGACGCCGACGCTGACCCGACCGGCCCTAAGTCGTGGTGGGGGCGCGCGTCAGTAGACGACAAGCGCGTGTTCGTCGGGCTCTTCGTAGACAAGATCGTTGTCACGAAGTCGACTACGGGCAGGGGGCAGGGAACGCCCATCGAGAAGCGCGCTTCGATCACGTGGGCGAAGCCGCCGACCGACGACGACGAAGACGACGCCCAGGACGGCACGGAAGACGTAGCGGCGTAG';
-const findPrimer = (seq) => {
+const findPrimerSite = (seq) => {
   let startBP = 0;
   let thresholdBP = 18 + startBP;
-  let prePrimer = seq.trim().slice(startBP, thresholdBP);
-  while (thresholdBP < seq.length && prePrimer.length <= 21) {
+  let prePrimerSite = seq.trim().slice(startBP, thresholdBP);
+  while (thresholdBP < seq.length && prePrimerSite.length <= 21) {
     if (
-      prePrimer[prePrimer.length - 1] === 'C' ||
-      prePrimer[prePrimer.length - 1] === 'G'
+      prePrimerSite[prePrimerSite.length - 1] === 'C' ||
+      prePrimerSite[prePrimerSite.length - 1] === 'G'
     ) {
-      const primer = complement(prePrimer);
-      const [Tm, GCcontent] = calcTmGC(primer);
-
-      console.log(
-        `3'-${primer}-5' : ${primer.length}bp ${startBP} :: ${thresholdBP}`
-      );
-      console.log(`Tm: ${Tm}±1°C, GC content: ${GCcontent}±1%`);
-
-      showPrimers(primer, startBP, thresholdBP, Tm, GCcontent);
-      break; // Вийти з циклу, коли умова виконана
+      return [prePrimerSite, startBP, thresholdBP];
     } else {
       thresholdBP++;
-      prePrimer = seq.slice(startBP, thresholdBP);
+      prePrimerSite = seq.slice(startBP, thresholdBP);
       startBP++;
     }
   }
 };
 
-function calcTmGC(seq) {
+const calcTmGC = (seq) => {
   let AT = 0;
   let GC = 0;
   let Tm = 0;
@@ -44,7 +35,7 @@ function calcTmGC(seq) {
   Tm = AT * 2 + GC * 4;
   GCcontent = Math.floor((GC / seq.length) * 100);
   return [Tm, GCcontent];
-}
+};
 const reverseSeq = (seq) => {
   const preReversedSeq = Array.from(seq);
   const reversedSeq = preReversedSeq.reverse().join('');
@@ -66,16 +57,44 @@ const showPrimers = (primerSeq, startPoint, finishPoint, Tm, GCcontent) => {
   const placeholder = document.getElementById('primer-maker_results');
   const primerDIV = document.createElement('div');
   // ********************************************************
-  const primerInfo = `3'-${primerSeq}-5' : ${primerSeq.length}bp ${startPoint} :: ${finishPoint}`;
+  const primerInfo = `3'-${primerSeq}-5' : ${primerSeq.length}bp || ${startPoint} :: ${finishPoint}`;
   const primerFeatures = `Tm: ${Tm}±1°C, GC content: ${GCcontent}±1%`;
   // ********************************************************
 
-  primerDIV.innerHTML = `<h2>${primerInfo}</h2> \n ${primerFeatures}`;
+  primerDIV.innerHTML = `<h2>${primerInfo}</h2> \n <h3>${primerFeatures}</h3>`;
 
   placeholder.appendChild(primerDIV);
 };
 
+const getForwardPrimer = (seq) => {
+  const fwdPrimerSite = findPrimerSite(seq);
+  const fwdPrimerSeq = complement(fwdPrimerSite[0]);
+  const [Tmelt, CGpercentage] = calcTmGC(fwdPrimerSeq);
+  showPrimers(
+    fwdPrimerSeq,
+    fwdPrimerSite[1],
+    fwdPrimerSite[2],
+    Tmelt,
+    CGpercentage
+  );
+};
+
+const getReversedPrimer = (seq) => {
+  const reversedSeq = reverseSeq(seq);
+  const revPrimerSite = findPrimerSite(reversedSeq);
+  const revPrimerSeq = complement(revPrimerSite[0]);
+  const [Tmelt, CGpercentage] = calcTmGC(revPrimerSeq);
+  showPrimers(
+    revPrimerSeq,
+    revPrimerSite[1],
+    revPrimerSite[2],
+    Tmelt,
+    CGpercentage
+  );
+};
+
 goBtn.addEventListener('click', () => {
   const seqDNA = document.getElementById('DNAseq').value;
-  findPrimer(seqDNA);
+  const forwardPrimer = getForwardPrimer(seqDNA); // Store the returned primer sequence
+  const reversedPrimer = getReversedPrimer(seqDNA);
 });
