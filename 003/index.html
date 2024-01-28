@@ -3,10 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Primer maker</title>
     <link rel="stylesheet" href="style.css" />
   </head>
+  <link rel="stylesheet" href="style.css" />
   <body>
+    <div class="container">
+      <h1>PCR Primers maker</h1>
+      <div class="primer-maker_templates">
+        <label for="DNAseq">Enter your DNA sequence:</label>
+        <textarea name="DNAseq" id="DNAseq" cols="30" rows="10"></textarea>
+        <button type="button" id="goBtn">Go primers</button>
+      </div>
+      <div id="primer-maker_results"></div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>
