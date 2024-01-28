@@ -49,11 +49,18 @@ const calcTmGC = (seq) => {
   return [Tm, GCcontent];
 };
 
-const showPrimers = (primerSeq, startPoint, finishPoint, Tm, GCcontent) => {
+const showPrimers = (
+  dir,
+  primerSeq,
+  startPoint,
+  finishPoint,
+  Tm,
+  GCcontent
+) => {
   const placeholder = document.getElementById('primer-maker_results');
   const primerDIV = document.createElement('div');
   // ********************************************************
-  const primerInfo = `3'-${primerSeq}-5' : ${primerSeq.length}bp || ${startPoint} :: ${finishPoint}`;
+  const primerInfo = `<h2>${dir}:</h2> 3'-${primerSeq}-5' : ${primerSeq.length}bp || ${startPoint} :: ${finishPoint}`;
   const primerFeatures = `Tm: ${Tm}±1°C, GC content: ${GCcontent}±1%`;
   // ********************************************************
 
@@ -62,10 +69,12 @@ const showPrimers = (primerSeq, startPoint, finishPoint, Tm, GCcontent) => {
   placeholder.appendChild(primerDIV);
 };
 const getForwardPrimer = (seq) => {
+  const direction = 'FORWARD';
   const fwdPrimerSite = findPrimerSite(seq);
   const fwdPrimerSeq = complement(fwdPrimerSite[0]);
   const [Tmelt, CGpercentage] = calcTmGC(fwdPrimerSeq);
   showPrimers(
+    direction,
     fwdPrimerSeq,
     fwdPrimerSite[1],
     fwdPrimerSite[2],
