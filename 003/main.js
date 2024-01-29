@@ -104,8 +104,30 @@ const getReversedPrimer = (seq) => {
   );
 };
 
+const comparePrimers = (lengthF, lengthR, tmF, tmR, gcF, gcR) => {
+  const length = Math.abs(lengthF - lengthR);
+  const tm = Math.abs(tmF - tmR);
+  const gc = Math.abs(gcF - gcR);
+  if (length > 4 || tm > 5 || gc > 10) {
+    console.log('Primer is nice');
+  } else {
+    console.log('Primers like a pice of shit');
+  }
+};
+
+const primerMaker = (seq) => {
+  if (!seq || seq.length < 45 || !/^[ATGC]+$/i.test(seq)) {
+    alert(
+      'Type the DNA sequence to find primers for PCR. \nDNA sequence must be longer than 45bp.\nDNA sequence contains A T C G only. '
+    );
+  } else {
+    getForwardPrimer(seq);
+    getReversedPrimer(seq);
+  }
+};
+
 goBtn.addEventListener('click', () => {
   const seqDNA = document.getElementById('DNAseq').value;
-  const forwardPrimer = getForwardPrimer(seqDNA); // Store the returned primer sequence
-  const reversedPrimer = getReversedPrimer(seqDNA);
+  const pureSeq = seqDNA.trim().toUpperCase();
+  primerMaker(pureSeq);
 });
